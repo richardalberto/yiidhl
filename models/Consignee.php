@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This is the model class "Shipper".
+ * This is the model class "Consignee".
  */
 class Consignee
 {
