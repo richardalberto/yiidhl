@@ -21,13 +21,13 @@
  * 		'ext.yiidhl.models.*',
  * 	),
  * 	'components' => array(
- * 		'yiidhl' => array(
- * 			'class' => 'ext.yiidhl.YiiDHL',
- * 			'testMode' => true,
- *                      'useProxy' => true,
- *                      'proxyHost' => 'host',
- *                      'proxyAuth' => 'username:password'
- * 		),
+ *              'dhl' => array(
+ *                   'class' => 'ext.yiidhl.YiiDHL',
+ *                   'testMode' => true,
+ *                   'useProxy' => true,
+ *                   'proxyHost' => 'host:8080',
+ *                   'proxyAuth' => 'username:password',
+ *              ),
  * 		...
  * 	)
  * );
@@ -35,8 +35,7 @@
  * 
  * Example usage:
  * <pre>
- * $yiiDHL = new YiiDHL;
- * $orderInfo = $yiiDHL->find($trackingNumber);
+ * $dhlOrderInfo = Yii::app()->dhl->find($trackingNumber);
  * </pre>
  */
 class YiiDHL extends CApplicationComponent {
