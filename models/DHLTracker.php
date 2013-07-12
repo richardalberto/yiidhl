@@ -1,5 +1,5 @@
 <?php
-class DHLTracking {
+class DHLTracker {
     
     const PI_URL = 'https://xmlpi-ea.dhl.com/XMLShippingServlet';
     const PI_URL_TEST = 'https://xmlpitest-ea.dhl.com/XMLShippingServlet';
@@ -51,8 +51,8 @@ class DHLTracking {
         $this->_xml .= "<ServiceHeader>" . $this->_xmlEnd;
         $this->_xml .= "<MessageTime>" . date("c") . "</MessageTime>" . $this->_xmlEnd;
         $this->_xml .= "<MessageReference>1234567890123456789012345678</MessageReference>" . $this->_xmlEnd;
-        $this->_xml .= "<SiteID>" . $this->_PIuserid . "</SiteID>" . $this->_xmlEnd;
-        $this->_xml .= "<Password>" . $this->_PIpwd . "</Password>" . $this->_xmlEnd;
+        $this->_xml .= "<SiteID>" . $this->userId . "</SiteID>" . $this->_xmlEnd;
+        $this->_xml .= "<Password>" . $this->passwd . "</Password>" . $this->_xmlEnd;
         $this->_xml .= "</ServiceHeader>" . $this->_xmlEnd;
         $this->_xml .= "</Request>" . $this->_xmlEnd;
         $this->_xml .= "<LanguageCode>en</LanguageCode>" . $this->_xmlEnd;
@@ -67,7 +67,7 @@ class DHLTracking {
         if($abi->AWBInfo->Status->ActionStatus == 'No Shipments Found')
             return null;
         
-        $awb = new AWBInfo;        
+        $awb = new DHLOrderInfo;        
         // data
         $awb->number = (string) $abi->AWBInfo->AWBNumber;
         $awb->status = (string) $abi->AWBInfo->Status->ActionStatus;
@@ -137,7 +137,7 @@ class DHLTracking {
         } else {
             if (!$this->errorFail) {
 
-                $use_url = ($this->_PImode == "test" ? $this->_PItesturl : $this->_PIurl);
+                $use_url = ($this->inTestMode ? DHLTracker::PI_URL_TEST : DHLTracker::PI_URL);
                 curl_setopt($ch, CURLOPT_URL, $use_url);
                 curl_setopt($ch, CURLOPT_POST, 1);
                 curl_setopt($ch, CURLOPT_HEADER, 0);

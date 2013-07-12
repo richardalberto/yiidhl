@@ -1,9 +1,9 @@
 <?php
 
 /**
- * This is the model class "AWBInfo".
+ * This is the model class "DHLOrderInfo".
  */
-class AWBInfo extends CModel
+class DHLOrderInfo extends CModel
 {
     // awb info
     public $number;
