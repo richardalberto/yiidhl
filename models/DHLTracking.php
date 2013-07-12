@@ -1,118 +1,43 @@
 <?php
 class DHLTracking {
-
+    
+    const PI_URL = 'https://xmlpi-ea.dhl.com/XMLShippingServlet';
+    const PI_URL_TEST = 'https://xmlpitest-ea.dhl.com/XMLShippingServlet';
+    
+    var $inTestMode;
+    
     //
-    var $_PIuserid = "911comprep";
-    var $_PIpwd = "DiiC08pR3p";
-    var $_PIurl = "";
-    var $_PItesturl = "";
-    var $_PImode = "";
+    var $userId = "911comprep";
+    var $passwd = "DiiC08pR3p";
+    
     var $_errors = array();
     var $errorFail = false;
     var $_xml = null;
     var $_result = null;
-    var $_xmlEnd = "\n";
-    var $checkAuth = false;
-    var $checkReq = true;
+    var $_xmlEnd = "\n";    
     
     public $proxy = false;
     public $proxyAuth = false;
     public $useProxy = false;
 
-    function __construct($mode = 'test') {
-        //
-        $this->_PIurl = "https://xmlpi-ea.dhl.com/XMLShippingServlet";
-        $this->_PItesturl = "https://xmlpitest-ea.dhl.com/XMLShippingServlet";
-        switch (strtolower($mode)) {
-            case 'live':
-                // we use live mode
-                $this->_PImode = "live";
-                break;
-            case 'test':
-            default:
-                // we default to test mode
-                $this->_PImode = "test";
-                break;
-        }
+    function __construct($inTestMode = true) {
+        $this->inTestMode = $inTestMode;
     }
 
-    //========================================================================================
-    // set login info
-    //========================================================================================
-    function setAuth($userid = NULL, $pwd = NULL) {
-        if (is_null($userid)) {
-            $this->logError("auth > UserID", $msg = "user id was not set", true);
-        } else {
-            $this->_PIuserid = $userid;
-        }
-        if (is_null($userid)) {
-            $this->logError("auth > Password", $msg = "Password was not set", true);
-        } else {
-            $this->_PIpwd = $pwd;
-        }
-        $this->checkAuth = true;
+    public function setAuth($userid = NULL, $passwd = NULL) {
+        $this->userId = $userid;
+        $this->passwd = $passwd;
     }
 
-    function logError($loc = "", $msg = "", $fail = false) {
-        //
-        $tmp = array(
-            'location' => $loc,
-            'message' => $msg,
-            'stop' => ((bool) $fail ? "Yes" : "No"),
-            'time' => microtime(true)
-        );
-        if ((bool) $fail) {
-            $this->errorFail = true;
-        }
-        $this->_errors[] = $tmp;
-        $tmp = NULL;
-    }
-
-    function getErrors() {
-        //
-        return ($this->_errors);
-    }
-
-    function setProxy($proxy, $proxyAuth, $use = true) {
+    public function setProxyInfo($proxy, $proxyAuth, $use = true) {
         $this->useProxy = $use;
         $this->proxy = $proxy;
         $this->proxyAuth = $proxyAuth;
     }
 
-    //========================================================================================
-    // send pi request
-    //========================================================================================
-    function _sendCallPI() {
-        if (!$ch = curl_init()) {
-            $this->logError("Send >> Curl", $msg = "Curl is not initialized", true);
-            return false;
-        } else {
-            if ($this->checkAuth && $this->checkReq && !$this->errorFail) {
-
-                $use_url = ($this->_PImode == "test" ? $this->_PItesturl : $this->_PIurl);
-                curl_setopt($ch, CURLOPT_URL, $use_url);
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_HEADER, 0);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_xml);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                // for proxy
-                if($this->useProxy){
-                    curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
-                    curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->proxyAuth);
-                }
-                $this->_result = curl_exec($ch);
-                if (curl_error($ch) != "") {
-                    $this->logError("Send >> Curl", $msg = "Error with Curl installation: " . curl_error($ch), true);
-                    return false;
-                } else {
-                    curl_close($ch);
-                    return $this->_result;
-                }
-            }
-        }
+    public function getErrors() {
+        //
+        return ($this->_errors);
     }
 
     function single($airbill) {
@@ -134,7 +59,9 @@ class DHLTracking {
         $this->_xml .= "<AWBNumber>" . $airbill . "</AWBNumber>" . $this->_xmlEnd;
         $this->_xml .= "<LevelOfDetails>ALL_CHECK_POINTS</LevelOfDetails>" . $this->_xmlEnd;
         $this->_xml .= "</req:KnownTrackingRequest>" . $this->_xmlEnd;
-        $abi = simplexml_load_string($this->_sendCallPI());
+        
+        // make request
+        $abi = simplexml_load_string($this->sendCallPI());
         
         // return null on order not found
         if($abi->AWBInfo->Status->ActionStatus == 'No Shipments Found')
@@ -187,8 +114,54 @@ class DHLTracking {
         
         return $awb;
     }
+    
+    private function logError($loc = "", $msg = "", $fail = false) {
+        //
+        $tmp = array(
+            'location' => $loc,
+            'message' => $msg,
+            'stop' => ((bool) $fail ? "Yes" : "No"),
+            'time' => microtime(true)
+        );
+        if ((bool) $fail) {
+            $this->errorFail = true;
+        }
+        $this->_errors[] = $tmp;
+        $tmp = NULL;
+    }
 
-//end function
+    private function sendCallPI() {
+        if (!$ch = curl_init()) {
+            $this->logError("Send >> Curl", $msg = "Curl is not initialized", true);
+            return false;
+        } else {
+            if (!$this->errorFail) {
+
+                $use_url = ($this->_PImode == "test" ? $this->_PItesturl : $this->_PIurl);
+                curl_setopt($ch, CURLOPT_URL, $use_url);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_HEADER, 0);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_xml);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                // for proxy
+                if($this->useProxy){
+                    curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
+                    curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->proxyAuth);
+                }
+                $this->_result = curl_exec($ch);
+                if (curl_error($ch) != "") {
+                    $this->logError("Send >> Curl", $msg = "Error with Curl installation: " . curl_error($ch), true);
+                    return false;
+                } else {
+                    curl_close($ch);
+                    return $this->_result;
+                }
+            }
+        }
+    }
 }
 
 ?>
