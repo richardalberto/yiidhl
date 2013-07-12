@@ -19,7 +19,7 @@ Have a bug or a feature request? [Please open a new issue](https://github.com/da
 
 ## Installing the module
 
-To install the module, you need to copy the folder yiidhl to the protected/modules on your application.
+To install the module, you need to copy the folder yiidhl to the protected/extensions folder on your Yii application.
 
 
 ## Configuring
@@ -29,15 +29,22 @@ To access the module, you need to modify the application configuration as follow
 ```
 <?php
 return array(
-    'modules'=>array(
-        'yiidhl' => array(
+    ...
+    'import => array(
+        ...
+        'ext.yiidhl.models.*',
+    ),
+    'components' => array(
+        'dhl' => array(
+            'class' => 'ext.yiidhl.YiiDHL',
             'testMode' => true,
             'useProxy' => true,
-            'proxyAuth' => 'user:password',
+            'proxyHost' => 'host:8080',
+            'proxyAuth' => 'username:password',
         ),
-    ),
-    .......
-); 
+        ...
+    )
+);
 ```
 
 
