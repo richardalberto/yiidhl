@@ -7,7 +7,8 @@ Currently YiiDHL only supports DHL order tracking, but other
 
 ## Quick start
 
-To quick start clone the repo: `git clone https://github.com/damnpoet/yiidhl.git`.
+To quick start get the files from [https://github.com/damnpoet/yiidhl](https://github.com/damnpoet/yiidhl), 
+or clone the repo: `git clone https://github.com/damnpoet/yiidhl.git`.
 
 
 
@@ -18,9 +19,9 @@ Have a bug or a feature request? [Please open a new issue](https://github.com/da
 
 
 
-## Installing the module
+## Installing the extension
 
-To install the module, you need to copy the folder yiidhl to the protected/extensions folder on your Yii application.
+To install the extension, you need to copy the folder yiidhl to the protected/extensions folder on your Yii application.
 
 
 ## Configuring
@@ -31,7 +32,7 @@ To access the module, you need to modify the application configuration as follow
 <?php
 return array(
     ...
-    'import => array(
+    'import' => array(
         ...
         'ext.yiidhl.models.*',
     ),
