@@ -39,6 +39,8 @@ return array(
     'components' => array(
         'dhl' => array(
             'class' => 'ext.yiidhl.YiiDHL',
+            //'dhlSiteId'=>'DServiceVal',
+            //'dhlPassword'=>'testServVal',
             'testMode' => true,
             'useProxy' => true,
             'proxyHost' => 'host:8080',
