@@ -64,7 +64,7 @@ $dhlOrderInfo = Yii::app()->dhl->find($trackingNumber);
 
 + [http://twitter.com/damnpoet](http://twitter.com/damnpoet)
 + [http://github.com/damnpoet](http://github.com/damnpoet)
-+ [damnpoet@gmail.com](mailto:damnpoet@gmail.com))
++ [damnpoet@gmail.com](mailto:damnpoet@gmail.com)
 
 
 ## Copyright and license
