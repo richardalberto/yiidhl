@@ -1,4 +1,4 @@
-# YiiDHL v1.0.0
+# YiiDHL
 
 Yii extension for faster and easier DHL integration. 
 Currently YiiDHL only supports DHL order tracking, but other features will be arriving soon.
