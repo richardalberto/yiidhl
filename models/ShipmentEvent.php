@@ -3,7 +3,7 @@
 /**
  * This is the model class "ShipmentEvent".
  */
-class ShipmentEvent extends CModel
+class ShipmentEvent
 {
     public $date;
     public $time;
@@ -17,9 +17,5 @@ class ShipmentEvent extends CModel
         $this->serviceEvent = $serviceEvent;
         $this->signatory = $signatory;
         $this->serviceArea = $serviceArea;
-    }
-    
-    public function attributeNames() {
-        return array();
     }
 }

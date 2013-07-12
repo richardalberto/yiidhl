@@ -3,7 +3,7 @@
 /**
  * This is the model class "DHLOrderInfo".
  */
-class DHLOrderInfo extends CModel
+class DHLOrderInfo
 {
     // awb info
     public $number;
@@ -27,9 +27,5 @@ class DHLOrderInfo extends CModel
     
     public function addEvent($event){
         $this->events[] = $event;
-    }
-    
-    public function attributeNames() {
-        return array();
     }
 }

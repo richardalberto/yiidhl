@@ -3,7 +3,7 @@
 /**
  * This is the model class "Shipper".
  */
-class Consignee extends CModel
+class Consignee
 {
     public $name;
     public $city;
@@ -15,9 +15,5 @@ class Consignee extends CModel
         $this->city = $city;
         $this->postalCode = $postalCode;
         $this->countryCode = $countryCode;
-    }
-    
-    public function attributeNames() {
-        return array();
     }
 }

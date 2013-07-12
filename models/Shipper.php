@@ -3,7 +3,7 @@
 /**
  * This is the model class "Shipper".
  */
-class Shipper extends CModel
+class Shipper
 {
     public $name;
     public $referenceId;
@@ -19,9 +19,5 @@ class Shipper extends CModel
         $this->divisionCode = $divisionCode;
         $this->postalCode = $postalCode;
         $this->countryCode = $countryCode;
-    }
-    
-    public function attributeNames() {
-        return array();
     }
 }
