@@ -26,18 +26,19 @@ To install the module, you need to copy the folder yiidhl to the protected/modul
 
 To access the module, you need to modify the application configuration as follows:
 
-####<?php
-####return array(
-####    'modules'=>array(
-####        'yiidhl' => array(
-####            'testMode' => true,
-####            'useProxy' => true,
-####            'proxyAuth' => 'user:password',
-####        ),
-####    ),
-####    .......
-####); 
-
+```
+<?php
+return array(
+    'modules'=>array(
+        'yiidhl' => array(
+            'testMode' => true,
+            'useProxy' => true,
+            'proxyAuth' => 'user:password',
+        ),
+    ),
+    .......
+); 
+```
 
 
 ## Author
