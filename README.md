@@ -1,6 +1,6 @@
-# [YiiDHL v1.0.0] 
+# YiiDHL v1.0.0
 
-Yii module for faster and easier DHL integration.
+Yii extension for faster and easier DHL integration.
 
 
 
