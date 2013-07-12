@@ -4,39 +4,71 @@ class DHLTracker {
     const PI_URL = 'https://xmlpi-ea.dhl.com/XMLShippingServlet';
     const PI_URL_TEST = 'https://xmlpitest-ea.dhl.com/XMLShippingServlet';
     
+    const STATUS_FAILURE = 'Failure'; 
+    const STATUS_NO_SHIPMENT_FOUND = 'No Shipments Found';
+        
+    /**
+     * @var bool whether to use the live or test url.
+     * Defaults to true
+     */
     var $inTestMode;
     
-    //
-    var $userId = "911comprep";
-    var $passwd = "DiiC08pR3p";
+    /**
+     * @var string the siteId provided by DHL, this is used in live mode.
+     * Defaults to 'DServiceVal'
+     */
+    var $siteId = "DServiceVal";
+    
+    /**
+     * @var string the password provided by DHL, this is used in live mode.
+     * Defaults to 'testServVal'
+     */
+    var $passwd = "testServVal";
+    
+    /**
+     * @var bool if a proxy server will be used to connect with DHL.
+     * Defaults to false
+     */
+    public $useProxy = false;
+    
+    /**
+     * @var string the auth string. Format: 'username:password'
+     * Defaults to false
+     */
+    public $proxyAuth = false;
+    
+    /**
+     * @var string the host address. 
+     * Format: 'host:port' 
+     * Example: proxy.host.com:80 
+     * Defaults to false
+     */
+    public $proxyHost = false;
+    
     
     var $_errors = array();
     var $errorFail = false;
     var $_xml = null;
     var $_result = null;
-    var $_xmlEnd = "\n";    
+    var $_xmlEnd = "\n";        
     
-    public $proxy = false;
-    public $proxyAuth = false;
-    public $useProxy = false;
 
     function __construct($inTestMode = true) {
         $this->inTestMode = $inTestMode;
     }
-
-    public function setAuth($userid = NULL, $passwd = NULL) {
-        $this->userId = $userid;
+    
+    public function setAuth($siteId = NULL, $passwd = NULL) {
+        $this->siteId = $siteId;
         $this->passwd = $passwd;
     }
 
     public function setProxyInfo($proxy, $proxyAuth, $use = true) {
         $this->useProxy = $use;
-        $this->proxy = $proxy;
+        $this->proxyHost = $proxy;
         $this->proxyAuth = $proxyAuth;
     }
 
     public function getErrors() {
-        //
         return ($this->_errors);
     }
 
@@ -51,7 +83,7 @@ class DHLTracker {
         $this->_xml .= "<ServiceHeader>" . $this->_xmlEnd;
         $this->_xml .= "<MessageTime>" . date("c") . "</MessageTime>" . $this->_xmlEnd;
         $this->_xml .= "<MessageReference>1234567890123456789012345678</MessageReference>" . $this->_xmlEnd;
-        $this->_xml .= "<SiteID>" . $this->userId . "</SiteID>" . $this->_xmlEnd;
+        $this->_xml .= "<SiteID>" . $this->siteId . "</SiteID>" . $this->_xmlEnd;
         $this->_xml .= "<Password>" . $this->passwd . "</Password>" . $this->_xmlEnd;
         $this->_xml .= "</ServiceHeader>" . $this->_xmlEnd;
         $this->_xml .= "</Request>" . $this->_xmlEnd;
@@ -64,7 +96,11 @@ class DHLTracker {
         $abi = simplexml_load_string($this->sendCallPI());
         
         // return null on order not found
-        if($abi->AWBInfo->Status->ActionStatus == 'No Shipments Found')
+        if(!$abi)
+            return null;
+        elseif(isset($abi->Response->Status) && $abi->Response->Status == DHLTracker::STATUS_FAILURE)
+            return null;
+        elseif($abi->AWBInfo->Status->ActionStatus == DHLTracker::STATUS_NO_SHIPMENT_FOUND)
             return null;
         
         $awb = new DHLOrderInfo;        
@@ -136,7 +172,6 @@ class DHLTracker {
             return false;
         } else {
             if (!$this->errorFail) {
-
                 $use_url = ($this->inTestMode ? DHLTracker::PI_URL_TEST : DHLTracker::PI_URL);
                 curl_setopt($ch, CURLOPT_URL, $use_url);
                 curl_setopt($ch, CURLOPT_POST, 1);
@@ -146,9 +181,8 @@ class DHLTracker {
                 curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_xml);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                // for proxy
                 if($this->useProxy){
-                    curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
+                    curl_setopt($ch, CURLOPT_PROXY, $this->proxyHost);
                     curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->proxyAuth);
                 }
                 $this->_result = curl_exec($ch);

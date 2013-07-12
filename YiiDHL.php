@@ -71,6 +71,18 @@ class YiiDHL extends CApplicationComponent {
      * Defaults to true
      */
     public $testMode = true;
+    
+    /**
+     * @var string the userId provided by DHL.
+     * Defaults to empty
+     */
+    public $dhlSiteId = 'DServiceVal';
+    
+    /**
+     * @var string the password provided by DHL.
+     * Defaults to empty
+     */
+    public $dhlPassword = 'testServVal';
 
     /**
      * @var mixed Holds the DHLTracker tracker
@@ -117,6 +129,7 @@ class YiiDHL extends CApplicationComponent {
     public function getTracker() {
         if ($this->tracker === null) {
             $this->tracker = new DHLTracker($this->testMode);
+            $this->tracker->setAuth($this->dhlSiteId, $this->dhlPassword);
             if ($this->useProxy)
                 $this->tracker->setProxyInfo($this->proxyHost, $this->proxyAuth, true);
         }
