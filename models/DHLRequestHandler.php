@@ -1,16 +1,14 @@
 <?php
-class DHLTracker extends DHLXmlPiManager { 
+class DHLRequestHandler extends DHLXmlPiManager {        
 
-    function single($airbill) {
-        //
-        $this->_xml = $this->retrieveXmlFromView('trackingNumberRequest', array(
-            'siteId'=>$this->siteId,
-            'passwd'=>$this->passwd,
-            'airbill'=>$airbill
-        ));
+    function bookRequest() {
+        // retrive xml from view
+        $this->_xml = $this->retrieveXmlFromView('bookRequest');
         
-        // make request
+        // make request & parse
         $abi = simplexml_load_string($this->sendCallPI());
+        
+        var_dump($abi); die();
         
         // return null on order not found
         if(!$abi)

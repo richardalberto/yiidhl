@@ -88,6 +88,11 @@ class YiiDHL extends CApplicationComponent {
      * @var mixed Holds the DHLTracker tracker
      */
     protected $tracker;
+    
+    /**
+     * @var mixed Holds the DHLRequestHandler requestHandler
+     */
+    protected $requestHandler;
 
     /**
      * Calls the {@link registerScripts()} method.
@@ -110,6 +115,17 @@ class YiiDHL extends CApplicationComponent {
             self::logTrackingRequest($trackingNumber);
 
         return $this->getTracker()->single($trackingNumber);
+    }
+    
+    /**
+     * Books a new shipping on DHL.
+     * 
+     * The return value is boolean meaning, booked or not.
+     * 
+     * @return bool
+     */
+    public function book() {
+        return $this->getRequestHandler()->bookRequest();
     }
 
     /**
@@ -135,6 +151,21 @@ class YiiDHL extends CApplicationComponent {
         }
 
         return $this->tracker;
+    }
+    
+    /**
+     * Gets the DHLRequestHandler {@link DHLRequestHandler} class instance
+     * @return DHLRequestHandler
+     */
+    public function getRequestHandler() {
+        if ($this->requestHandler === null) {
+            $this->requestHandler = new DHLRequestHandler($this->testMode);
+            $this->requestHandler->setAuth($this->dhlSiteId, $this->dhlPassword);
+            if ($this->useProxy)
+                $this->requestHandler->setProxyInfo($this->proxyHost, $this->proxyAuth, true);
+        }
+
+        return $this->requestHandler;
     }
 
 }
