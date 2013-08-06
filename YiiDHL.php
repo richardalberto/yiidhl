@@ -93,6 +93,11 @@ class YiiDHL extends CApplicationComponent {
      * @var mixed Holds the DHLRequestHandler requestHandler
      */
     protected $requestHandler;
+    
+    /**
+     * @var mixed Holds the DHLCapabilityAndQuoteHandler capabilityAndQuoteHandler
+     */
+    protected $capabilityAndQuoteHandler;
 
     /**
      * Calls the {@link registerScripts()} method.
@@ -126,6 +131,23 @@ class YiiDHL extends CApplicationComponent {
      */
     public function book() {
         return $this->getRequestHandler()->bookRequest();
+    }
+    
+    /**
+     * Query webserver for capability.
+     * 
+     * The return value is a DHLCapabilityResponse object, or false if nothing returned.
+     * 
+     * @return DHLCapabilityResponse
+     */
+    public function getCapabilityResponseForOptions($options = array()) {
+        $additionalOptions = array(
+            'siteId'=>$this->dhlSiteId,
+            'sitePassword'=>$this->dhlPassword,
+        );
+        
+        $options = array_merge($additionalOptions, $options);
+        return $this->getCapabilityAndQuoteHandler()->queryCapability($options);
     }
 
     /**
@@ -166,6 +188,21 @@ class YiiDHL extends CApplicationComponent {
         }
 
         return $this->requestHandler;
+    }
+    
+    /**
+     * Gets the DHLCapabilityAndQuoteHandler {@link DHLCapabilityAndQuoteHandler} class instance
+     * @return DHLCapabilityAndQuoteHandler
+     */
+    public function getCapabilityAndQuoteHandler() {
+        if ($this->capabilityAndQuoteHandler === null) {
+            $this->capabilityAndQuoteHandler = new DHLCapabilityAndQuoteHandler($this->testMode);
+            $this->capabilityAndQuoteHandler->setAuth($this->dhlSiteId, $this->dhlPassword);
+            if ($this->useProxy)
+                $this->capabilityAndQuoteHandler->setProxyInfo($this->proxyHost, $this->proxyAuth, true);
+        }
+
+        return $this->capabilityAndQuoteHandler;
     }
 
 }

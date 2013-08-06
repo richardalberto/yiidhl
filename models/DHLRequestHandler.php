@@ -8,6 +8,7 @@ class DHLRequestHandler extends DHLXmlPiManager {
         // make request & parse
         $abi = simplexml_load_string($this->sendCallPI());
         
+        echo "<pre>";
         var_dump($abi); die();
         
         // return null on order not found
