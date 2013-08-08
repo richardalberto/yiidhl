@@ -5,7 +5,7 @@ class DHLCapabilityAndQuoteHandler extends DHLXmlPiManager {
     function queryCapability($options) {
         // retrive xml from view
         $this->_xml = $this->retrieveXmlFromView('capabilityRequest', $options);
-
+        
         // make request & parse
         $response = simplexml_load_string($this->sendCallPI());
         
@@ -20,17 +20,28 @@ class DHLCapabilityAndQuoteHandler extends DHLXmlPiManager {
         $dhlCapabilityResponse = new DHLCapabilityResponse;
 
         // add services
-        $srvs = $response->GetCapabilityResponse->Srvs->Srv;
+        $srvs = $response->GetCapabilityResponse->BkgDetails->QtdShp;
         foreach ($srvs as $srv) {
-            $srv = $srv->MrkSrv;
-
             $service = new DHLService();
+            $service->globalProductCode = (string) $srv->GlobalProductCode;
             $service->localProductCode = (string) $srv->LocalProductCode;
             $service->productShortName = (string) $srv->ProductShortName;
             $service->localProductName = (string) $srv->LocalProductName;
             $service->networkTypeCode = (string) $srv->NetworkTypeCode;
             $service->pOfferedCustAgreement = (string) $srv->POfferedCustAgreement;
             $service->transInd = (string) $srv->TransInd;
+            $service->pickupDate = (string) $srv->PickupDate;
+            $service->pickupCutoffTime = (string) $srv->PickupCutoffTime;
+            $service->bookingTime = (string) $srv->BookingTime;
+            $service->TotalTransitDays = (int) $srv->TotalTransitDays;
+            $service->pickupPostalLocAddDays = (int) $srv->PickupPostalLocAddDays;
+            $service->deliveryPostalLocAddDays = (int) $srv->DeliveryPostalLocAddDays;
+            $service->deliveryDate = (string) $srv->DeliveryDate;
+            $service->deliveryTime = (string) $srv->DeliveryTime;
+            $service->dimensionalWeight = (float) $srv->DimensionalWeight;
+            $service->weightUnit = (string) $srv->WeightUnit;
+            $service->pickupDayOfWeekNum = (int) $srv->PickupDayOfWeekNum;
+            $service->destinationDayOfWeekNum = (int) $srv->DestinationDayOfWeekNum;
 
             $dhlCapabilityResponse->services[] = $service;
         }
