@@ -136,18 +136,19 @@ class YiiDHL extends CApplicationComponent {
     /**
      * Query webserver for capability.
      * 
-     * The return value is a DHLCapabilityResponse object, or false if nothing returned.
+     * The return value is a DHLService array, or empty array if nothing returned.
      * 
      * @return DHLCapabilityResponse
      */
-    public function getCapabilityResponseForOptions($options = array()) {
+    public function getServices($options = array()) {
         $additionalOptions = array(
             'siteId'=>$this->dhlSiteId,
             'sitePassword'=>$this->dhlPassword,
         );
         
         $options = array_merge($additionalOptions, $options);
-        return $this->getCapabilityAndQuoteHandler()->queryCapability($options);
+        $response = $this->getCapabilityAndQuoteHandler()->queryCapability($options);
+        return !is_null($response) ? $response->services : array();
     }
 
     /**

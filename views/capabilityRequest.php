@@ -3,8 +3,6 @@
     <GetCapability>
         <Request>
             <ServiceHeader>
-                <MessageTime>2002-08-20T11:28:56.000-08:00</MessageTime>
-                <MessageReference>1234567890123456789012345678901</MessageReference>
                 <SiteID><?php echo $siteId; ?></SiteID>
                 <Password><?php echo $sitePassword; ?></Password>
             </ServiceHeader>
@@ -16,8 +14,8 @@
         </From>
         <BkgDetails>
             <PaymentCountryCode><?php echo $fromCountryCode; ?></PaymentCountryCode>
-            <Date><?php echo date('Y-m-d'); ?></Date>
-            <ReadyTime><?php echo date('\P\TH\Hi\M'); ?></ReadyTime>
+            <Date><?php echo isset($shipDate) ? date('Y-m-d', strtotime($shipDate)) : date('Y-m-d'); ?></Date>
+            <ReadyTime><?php echo isset($readyTime) ? date('\P\TH\Hi\M', strtotime($readyTime)) : date('\P\TH\Hi\M'); ?></ReadyTime>
             <DimensionUnit>IN</DimensionUnit>
             <WeightUnit>LB</WeightUnit>
             <?php if(isset($pieces) && count($pieces) > 0): ?>
